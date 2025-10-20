@@ -1,5 +1,12 @@
-export type IService = string;
-const initState: IService = "";
+export type IService = {
+  selectedServices: string[];
+  loadAll: boolean;
+};
+
+const initState: IService = {
+  selectedServices: [],
+  loadAll: false,
+};
 
 export default {
   namespace: "service",
@@ -7,7 +14,17 @@ export default {
   reducer: (state = initState, { type, payload }: any) => {
     switch (type) {
       case "UPDATE_SERVICE":
-        return payload;
+        return {
+          ...state,
+          selectedServices: [payload],
+          loadAll: false,
+        };
+      case "LOAD_ALL_SERVICES":
+        return {
+          ...state,
+          selectedServices: payload,
+          loadAll: true,
+        };
       default:
         return state;
     }
