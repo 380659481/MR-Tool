@@ -26,6 +26,7 @@ function service() {
   ];
 
   const [currentService, setCurrentService] = useState(serviceList[0]);
+  const [loadAll, setLoadAll] = useState(false);
 
   useEffect(() => {
     // 初始化store
@@ -34,8 +35,13 @@ function service() {
     // 订阅store变化
     const unsubscribe = store.subscribe(() => {
       const state = store.getState();
-      // 根据实际store结构调整路径（假设状态存储在state.service中）
-      if (state.service) setCurrentService(state.service);
+      // 根据实际store结构调整路径
+      if (state.service) {
+        setLoadAll(state.service.loadAll);
+        if (!state.service.loadAll && state.service.selectedServices.length > 0) {
+          setCurrentService(state.service.selectedServices[0]);
+        }
+      }
     });
 
     return () => unsubscribe();
@@ -46,22 +52,44 @@ function service() {
     store.dispatch({ type: "UPDATE_SERVICE", payload: service });
   };
 
+  const loadAllServices = () => {
+    console.log("Loading all services");
+    store.dispatch({ type: "LOAD_ALL_SERVICES", payload: serviceList });
+  };
+
   return (
-    <ButtonGroup
-      size="small"
-      color="primary"
-      aria-label="small outlined button group"
-    >
-      {serviceList.map((item) => (
+    <div>
+      <ButtonGroup
+        size="small"
+        color="primary"
+        aria-label="small outlined button group"
+        style={{ marginBottom: "8px" }}
+      >
         <Button
-          key={item}
-          onClick={() => changeService(item)}
-          variant={currentService === item ? "contained" : "outlined"}
+          onClick={loadAllServices}
+          variant={loadAll ? "contained" : "outlined"}
+          color="secondary"
         >
-          {item}
+          加载所有仓库
         </Button>
-      ))}
-    </ButtonGroup>
+      </ButtonGroup>
+      <ButtonGroup
+        size="small"
+        color="primary"
+        aria-label="small outlined button group"
+      >
+        {serviceList.map((item) => (
+          <Button
+            key={item}
+            onClick={() => changeService(item)}
+            variant={!loadAll && currentService === item ? "contained" : "outlined"}
+            disabled={loadAll}
+          >
+            {item}
+          </Button>
+        ))}
+      </ButtonGroup>
+    </div>
   );
 }
 export default service;
