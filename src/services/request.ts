@@ -4,6 +4,17 @@ import {UserService} from './request/userService';
 import {myMrTypes, otherMrTypes} from '@utils/type';
 import {MrService} from './request/mrService';
 
+// Define interface for MR data structure
+export interface MergeRequest {
+    id: string;
+    title: string;
+    author: any;
+    created_at: string;
+    target_branch: string;
+    source_project: any;
+    serviceName?: string;
+}
+
 export function getUserData(): Promise<any> {
     return UserService.getLoginUserRequest();
 }
@@ -18,7 +29,7 @@ async function getMrDetail(projectId: string, mrId: string): Promise<any> {
     return {};
 }
 
-export async function getMrRequestList(user: any, projectId: string): Promise<any> {
+export async function getMrRequestList(user: any, projectId: string): Promise<MergeRequest[]> {
     let merge_requests = await ProjectService.getMergeRequests(projectId);
     const sortedMrs = merge_requests
         .flat()
@@ -46,7 +57,7 @@ export async function getMrRequestList(user: any, projectId: string): Promise<an
     return mrs;
 }
 
-export async function getMrRequestListFromMultipleServices(user: any, serviceNames: string[]): Promise<any> {
+export async function getMrRequestListFromMultipleServices(user: any, serviceNames: string[]): Promise<MergeRequest[]> {
     console.log('Loading MRs from multiple services:', serviceNames);
     
     // 并行获取所有服务的项目ID
@@ -86,11 +97,11 @@ export async function getMrRequestListFromMultipleServices(user: any, serviceNam
     
     const allMrArrays = await Promise.all(mrPromises);
     
-    // 合并所有MR并按创建时间排序
+    // 合并所有MR并按创建时间排序 (最新的在前)
     const allMrs = allMrArrays
         .flat()
         .sort((mr1, mr2) => 
-            new Date(mr1.created_at).getTime() - new Date(mr2.created_at).getTime()
+            new Date(mr2.created_at).getTime() - new Date(mr1.created_at).getTime()
         );
     
     console.log(`Loaded ${allMrs.length} MRs from ${validProjectData.length} services`);

@@ -1,15 +1,16 @@
 import {useEffect, useState} from 'react';
 import styles from './index.less';
-import {getMrRequestList, getMrRequestListFromMultipleServices, getProjectDetail} from '@services/request';
+import {getMrRequestList, getMrRequestListFromMultipleServices, getProjectDetail, MergeRequest as MRInterface} from '@services/request';
 import {connect} from 'react-redux';
+import {IService} from '@store/service';
 
 interface Props {
     user: any;
-    service: any;
+    service: IService | string;  // Support both new and legacy service state
 }
 
 function MergeRequest({user, service}: Props) {
-    const [mrList, setMrList] = useState([]);
+    const [mrList, setMrList] = useState<MRInterface[]>([]);
     const [loading, setLoading] = useState(false);
     
     const getMrRequest = async (name: string) => {
@@ -83,9 +84,11 @@ function MergeRequest({user, service}: Props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {mrList?.map((item: any, index: number) => {
+                    {mrList?.map((item: MRInterface, index: number) => {
+                        // Use a more unique key to avoid React rendering issues
+                        const uniqueKey = item.serviceName ? `${item.serviceName}-${item.id}` : `${item.id}-${index}`;
                         return (
-                            <tr key={`${item.id}-${index}`}>
+                            <tr key={uniqueKey}>
                                 <td>{item?.source_project?.name}</td>
                                 <td>{item?.title}</td>
                                 <td>{item?.author?.name_cn}</td>
