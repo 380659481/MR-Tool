@@ -1,6 +1,11 @@
 import store from '@store/store';
 
 export class MrUtils {
+    /**
+     * @deprecated This method is not compatible with React rendering.
+     * Use the style properties on MergeRequest objects instead (styleColor, styleTags).
+     * This method directly manipulates DOM which conflicts with React's virtual DOM.
+     */
     static setMrStyle({ mrId }, { color, tags }) {
         const $mrLink = $(`ul.mr-list li.merge-request span.merge-request-title-text a[href="${mrId}"]`);
 

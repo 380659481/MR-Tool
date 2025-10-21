@@ -90,7 +90,14 @@ function MergeRequest({user, service}: Props) {
                         return (
                             <tr key={uniqueKey}>
                                 <td>{item?.source_project?.name}</td>
-                                <td>{item?.title}</td>
+                                <td style={{ color: item.styleColor || 'black' }}>
+                                    {item.styleTags && item.styleTags.length > 0 && (
+                                        <span className={styles.mrStatusTags}>
+                                            {item.styleTags.map(tag => `【${tag}】`).join('')}
+                                        </span>
+                                    )}
+                                    {item?.title}
+                                </td>
                                 <td>{item?.author?.name_cn}</td>
                                 <td>{new Date(item.created_at).toLocaleString()}</td>
                                 <td>{item?.target_branch}</td>

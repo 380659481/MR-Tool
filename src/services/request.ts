@@ -13,6 +13,9 @@ export interface MergeRequest {
     target_branch: string;
     source_project: any;
     serviceName?: string;
+    // React-compatible styling properties
+    styleColor?: string;
+    styleTags?: string[];
 }
 
 export function getUserData(): Promise<any> {
@@ -50,8 +53,15 @@ export async function getMrRequestList(user: any, projectId: string): Promise<Me
         const mrType = mrTypes
             .filter(({isActivated}) => isActivated !== false)
             .find(({test}) => test(mrInfo));
-        MrUtils.setMrStyle(mr, mrType.style);
-        return mr;
+        
+        // Instead of manipulating DOM, enrich the MR data with style information
+        const enrichedMr: MergeRequest = {
+            ...mr,
+            styleColor: mrType?.style?.color?.common || 'black',
+            styleTags: mrType?.style?.tags || []
+        };
+        
+        return enrichedMr;
     }));
 
     return mrs;
