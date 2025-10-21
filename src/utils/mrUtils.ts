@@ -16,7 +16,7 @@ export class MrUtils {
         }
     }
 
-    static isAllMyDiscussionUnresolved({mrDetail: { mrDiscussions }}) {
+    static isAllMyDiscussionUnresolved({ mrDetail: { mrDiscussions } }) {
         const userId = store.getState().user.id;
         if (!mrDiscussions) {
             return false;
@@ -68,24 +68,25 @@ export class MrUtils {
         const userId = store.getState().user.id;
         return approvers_check.required_approvers.includes(userId);
     }
-    static hasOtherDiscussionUnresolved(mrInfo: any) {
-        throw new Error("Method not implemented.");
+    static hasOtherDiscussionUnresolved({ mrDetail: { mrDiscussions }}) {
+        return false;
     }
-    static isPipelineSuccess({mrDetail: {pipeline_status}}): boolean {
+    static isPipelineSuccess({ mrDetail: { pipeline_status } }): boolean {
         return pipeline_status === 'success';
     }
-    static isPipelineRunning(mrInfo: any) {
-        throw new Error("Method not implemented.");
+    static isPipelineRunning({ mrDetail: { pipeline_status } }) {
+        return pipeline_status === 'running';
     }
-    static hasConflicts({mrDetail: {is_conflict}}) {
+    static hasConflicts({ mrDetail: { is_conflict } }) {
         return is_conflict;
     }
-    static isMerged({mrDetail: {state}}) {
+    static isMerged({ mrDetail: { state } }) {
         return state === 'merged';
     }
-    static isMyMr({user: {username: loginUserName}, mrDetail: {author: {username}}}) {
-        return username === loginUserName;
+    static isMyMr({ mrDetail: { author: { id } } }) {
+        const userId = store.getState().user.id;
+        return id === userId;
     }
 
-    
+
 }
